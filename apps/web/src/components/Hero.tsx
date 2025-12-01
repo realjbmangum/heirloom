@@ -39,8 +39,8 @@ export default function Hero() {
         </div>
 
         {/* Hero Video */}
-        <div className="mt-16 max-w-4xl mx-auto">
-          <div className="rounded-lg overflow-hidden shadow-2xl shadow-heritage-green/20">
+        <div className="mt-16 max-w-sm mx-auto">
+          <div className="rounded-2xl overflow-hidden shadow-2xl shadow-heritage-green/20">
             <video
               autoPlay
               loop
@@ -48,7 +48,7 @@ export default function Hero() {
               playsInline
               className="w-full h-auto"
             >
-              <source src="/heirloom1.mp4" type="video/mp4" />
+              <source src="/heirloom2.mp4" type="video/mp4" />
             </video>
           </div>
         </div>
