@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-
-// In production, you would:
-// 1. Save to a database (Supabase, etc.)
-// 2. Send to an email service (Mailchimp, ConvertKit, etc.)
-// 3. Send a confirmation email
+import { supabase } from '@/lib/supabase'
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,15 +13,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // TODO: Add your email service integration here
-    // Example with Supabase:
-    // const { error } = await supabase.from('waitlist').insert({ email })
+    // Insert into Supabase
+    const { error } = await supabase
+      .from('waitlist')
+      .insert({ email: email.toLowerCase().trim() })
 
-    // Example with Mailchimp:
-    // await mailchimp.lists.addListMember(listId, { email_address: email, status: 'subscribed' })
+    if (error) {
+      // Handle duplicate email
+      if (error.code === '23505') {
+        return NextResponse.json(
+          { message: 'You\'re already on the list!' },
+          { status: 200 }
+        )
+      }
 
-    // For now, just log it (you can see this in Vercel logs)
-    console.log('Waitlist signup:', email)
+      console.error('Supabase error:', error)
+      return NextResponse.json(
+        { error: 'Something went wrong' },
+        { status: 500 }
+      )
+    }
 
     return NextResponse.json(
       { message: 'Successfully joined waitlist' },
