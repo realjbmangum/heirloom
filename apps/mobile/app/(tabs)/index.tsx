@@ -1,83 +1,169 @@
-import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
-import { Link } from 'expo-router';
+import { View, Text, StyleSheet, Pressable, ScrollView, FlatList } from 'react-native';
+import { Link, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Typography } from '@/constants';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Colors, Typography, MOCK_STORIES, MOCK_FAMILY_STORIES, MOCK_TIME_CAPSULES, MOCK_PROMPTS } from '@/constants';
+import { StoryCard, PromptCard, TimeCapsuleCard } from '@/components';
+import { useState } from 'react';
 
 export default function HomeScreen() {
+  const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
+  const currentPrompt = MOCK_PROMPTS[currentPromptIndex];
+
+  const handleChangePrompt = () => {
+    setCurrentPromptIndex((prev) => (prev + 1) % MOCK_PROMPTS.length);
+  };
+
+  const handleRecord = () => {
+    router.push('/record');
+  };
+
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.content}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Daily Prompt Card */}
-      <View style={styles.promptCard}>
-        <Text style={styles.promptLabel}>TODAY'S PROMPT</Text>
-        <Text style={styles.promptText}>
-          What is your favorite childhood memory?
-        </Text>
-        <Link href="/record" asChild>
-          <Pressable style={styles.recordButton}>
-            <Ionicons name="mic" size={28} color={Colors.white} />
-          </Pressable>
-        </Link>
-        <Text style={styles.recordLabel}>Tap to Record</Text>
-
-        <View style={styles.recordOptions}>
-          <Pressable style={styles.recordOption}>
-            <View style={styles.recordOptionIcon}>
-              <Ionicons name="mic-outline" size={24} color={Colors.heritageGreen} />
-            </View>
-            <Text style={styles.recordOptionLabel}>Audio</Text>
-          </Pressable>
-          <Pressable style={styles.recordOption}>
-            <View style={styles.recordOptionIcon}>
-              <Ionicons name="videocam-outline" size={24} color={Colors.heritageGreen} />
-            </View>
-            <Text style={styles.recordOptionLabel}>Video</Text>
-          </Pressable>
-          <Pressable style={styles.recordOption}>
-            <View style={styles.recordOptionIcon}>
-              <Ionicons name="cloud-upload-outline" size={24} color={Colors.heritageGreen} />
-            </View>
-            <Text style={styles.recordOptionLabel}>Upload</Text>
-          </Pressable>
-        </View>
-
-        <Pressable style={styles.changePrompt}>
-          <Text style={styles.changePromptText}>Choose another prompt →</Text>
-        </Pressable>
-      </View>
+      <Animated.View entering={FadeInDown.duration(500).delay(100)}>
+        <PromptCard
+          prompt={currentPrompt.text}
+          category={currentPrompt.category}
+          onRecord={handleRecord}
+          onChangePrompt={handleChangePrompt}
+        />
+      </Animated.View>
 
       {/* My Vault Preview */}
-      <View style={styles.section}>
+      <Animated.View
+        entering={FadeInDown.duration(500).delay(200)}
+        style={styles.section}
+      >
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>My Vault</Text>
+          <View style={styles.sectionTitleRow}>
+            <Ionicons name="folder" size={20} color={Colors.heritageGreen} />
+            <Text style={styles.sectionTitle}>My Vault</Text>
+          </View>
           <Link href="/vault" asChild>
-            <Pressable>
-              <Text style={styles.seeAll}>See all →</Text>
+            <Pressable style={styles.seeAllButton}>
+              <Text style={styles.seeAll}>See all</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.heritageGreen} />
             </Pressable>
           </Link>
         </View>
-        <View style={styles.emptyState}>
-          <Ionicons name="folder-open-outline" size={48} color={Colors.heritageGreen + '40'} />
-          <Text style={styles.emptyText}>Your stories will appear here</Text>
-          <Text style={styles.emptySubtext}>Record your first memory to get started</Text>
+
+        {MOCK_STORIES.length > 0 ? (
+          <FlatList
+            horizontal
+            data={MOCK_STORIES.slice(0, 5)}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <StoryCard story={item} size="medium" />
+            )}
+            contentContainerStyle={styles.storyList}
+            showsHorizontalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+          />
+        ) : (
+          <View style={styles.emptyState}>
+            <Ionicons name="folder-open-outline" size={40} color={Colors.heritageGreen + '30'} />
+            <Text style={styles.emptyText}>Your stories will appear here</Text>
+            <Text style={styles.emptySubtext}>Record your first memory to get started</Text>
+          </View>
+        )}
+      </Animated.View>
+
+      {/* Time Capsules */}
+      <Animated.View
+        entering={FadeInDown.duration(500).delay(300)}
+        style={styles.section}
+      >
+        <View style={styles.sectionHeader}>
+          <View style={styles.sectionTitleRow}>
+            <Ionicons name="time" size={20} color={Colors.heritageGreen} />
+            <Text style={styles.sectionTitle}>Time Capsules</Text>
+          </View>
+          <Pressable style={styles.addButton}>
+            <Ionicons name="add" size={20} color={Colors.heritageGreen} />
+          </Pressable>
         </View>
-      </View>
+
+        {MOCK_TIME_CAPSULES.length > 0 ? (
+          <FlatList
+            horizontal
+            data={MOCK_TIME_CAPSULES}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TimeCapsuleCard capsule={item} />
+            )}
+            contentContainerStyle={styles.capsuleList}
+            showsHorizontalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+          />
+        ) : (
+          <Pressable style={styles.createCapsuleCard}>
+            <View style={styles.createCapsuleIcon}>
+              <Ionicons name="time-outline" size={28} color={Colors.heritageGreen} />
+            </View>
+            <View style={styles.createCapsuleContent}>
+              <Text style={styles.createCapsuleTitle}>Create a Time Capsule</Text>
+              <Text style={styles.createCapsuleSubtitle}>
+                Schedule stories to be revealed on a future date
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={Colors.charcoalInk + '40'} />
+          </Pressable>
+        )}
+      </Animated.View>
 
       {/* Family Vault Preview */}
-      <View style={styles.section}>
+      <Animated.View
+        entering={FadeInDown.duration(500).delay(400)}
+        style={styles.section}
+      >
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Family Vault</Text>
+          <View style={styles.sectionTitleRow}>
+            <Ionicons name="people" size={20} color={Colors.heritageGreen} />
+            <Text style={styles.sectionTitle}>Family Vault</Text>
+          </View>
           <Link href="/family" asChild>
-            <Pressable>
-              <Text style={styles.seeAll}>See all →</Text>
+            <Pressable style={styles.seeAllButton}>
+              <Text style={styles.seeAll}>See all</Text>
+              <Ionicons name="chevron-forward" size={16} color={Colors.heritageGreen} />
             </Pressable>
           </Link>
         </View>
-        <View style={styles.emptyState}>
-          <Ionicons name="people-outline" size={48} color={Colors.heritageGreen + '40'} />
-          <Text style={styles.emptyText}>Connect with your family</Text>
-          <Text style={styles.emptySubtext}>Invite family members to share stories</Text>
-        </View>
-      </View>
+
+        {MOCK_FAMILY_STORIES.length > 0 ? (
+          <FlatList
+            horizontal
+            data={MOCK_FAMILY_STORIES}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <StoryCard story={item} size="medium" />
+            )}
+            contentContainerStyle={styles.storyList}
+            showsHorizontalScrollIndicator={false}
+            ItemSeparatorComponent={() => <View style={{ width: 12 }} />}
+          />
+        ) : (
+          <Pressable style={styles.inviteFamilyCard}>
+            <View style={styles.inviteFamilyIcon}>
+              <Ionicons name="people-outline" size={28} color={Colors.heritageGreen} />
+            </View>
+            <View style={styles.inviteFamilyContent}>
+              <Text style={styles.inviteFamilyTitle}>Invite your family</Text>
+              <Text style={styles.inviteFamilySubtitle}>
+                Share stories and build your legacy together
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={Colors.charcoalInk + '40'} />
+          </Pressable>
+        )}
+      </Animated.View>
+
+      {/* Bottom spacing */}
+      <View style={{ height: 20 }} />
     </ScrollView>
   );
 }
@@ -90,100 +176,52 @@ const styles = StyleSheet.create({
   content: {
     padding: 20,
   },
-  promptCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    padding: 24,
-    alignItems: 'center',
-    shadowColor: Colors.charcoalInk,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
-    marginBottom: 24,
-  },
-  promptLabel: {
-    fontSize: Typography.sizes.xs,
-    fontWeight: '600',
-    color: Colors.heirloomGold,
-    letterSpacing: 1,
-    marginBottom: 12,
-  },
-  promptText: {
-    fontSize: Typography.sizes['2xl'],
-    color: Colors.charcoalInk,
-    textAlign: 'center',
-    lineHeight: 32,
-    marginBottom: 24,
-  },
-  recordButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: Colors.heirloomGold,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: Colors.heirloomGold,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 5,
-  },
-  recordLabel: {
-    marginTop: 12,
-    fontSize: Typography.sizes.sm,
-    fontWeight: '500',
-    color: Colors.charcoalInk,
-  },
-  recordOptions: {
-    flexDirection: 'row',
-    gap: 24,
-    marginTop: 24,
-  },
-  recordOption: {
-    alignItems: 'center',
-    gap: 6,
-  },
-  recordOptionIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
-    backgroundColor: Colors.ivoryLinen,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  recordOptionLabel: {
-    fontSize: Typography.sizes.xs,
-    color: Colors.charcoalInk + '99',
-  },
-  changePrompt: {
-    marginTop: 20,
-  },
-  changePromptText: {
-    fontSize: Typography.sizes.sm,
-    color: Colors.heritageGreen,
-  },
   section: {
-    marginBottom: 24,
+    marginTop: 28,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 14,
+  },
+  sectionTitleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   sectionTitle: {
     fontSize: Typography.sizes.lg,
     fontWeight: '600',
     color: Colors.charcoalInk,
   },
+  seeAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
   seeAll: {
     fontSize: Typography.sizes.sm,
     color: Colors.heritageGreen,
+    fontWeight: '500',
+  },
+  addButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: Colors.heritageGreen + '10',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  storyList: {
+    paddingRight: 20,
+  },
+  capsuleList: {
+    paddingRight: 20,
   },
   emptyState: {
     backgroundColor: Colors.white,
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 32,
     alignItems: 'center',
   },
@@ -196,6 +234,74 @@ const styles = StyleSheet.create({
   emptySubtext: {
     marginTop: 4,
     fontSize: Typography.sizes.sm,
-    color: Colors.charcoalInk + '80',
+    color: Colors.charcoalInk + '60',
+  },
+  createCapsuleCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: Colors.charcoalInk,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  createCapsuleIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    backgroundColor: Colors.heritageGreen + '10',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  createCapsuleContent: {
+    flex: 1,
+  },
+  createCapsuleTitle: {
+    fontSize: Typography.sizes.base,
+    fontWeight: '600',
+    color: Colors.charcoalInk,
+    marginBottom: 2,
+  },
+  createCapsuleSubtitle: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.charcoalInk + '60',
+  },
+  inviteFamilyCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: Colors.charcoalInk,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  inviteFamilyIcon: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    backgroundColor: Colors.heritageGreen + '10',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  inviteFamilyContent: {
+    flex: 1,
+  },
+  inviteFamilyTitle: {
+    fontSize: Typography.sizes.base,
+    fontWeight: '600',
+    color: Colors.charcoalInk,
+    marginBottom: 2,
+  },
+  inviteFamilySubtitle: {
+    fontSize: Typography.sizes.sm,
+    color: Colors.charcoalInk + '60',
   },
 });

@@ -1,5 +1,7 @@
 import { Tabs } from 'expo-router';
+import { View, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 import { Colors } from '@/constants';
 
 export default function TabLayout() {
@@ -7,33 +9,58 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors.heritageGreen,
-        tabBarInactiveTintColor: Colors.charcoalInk + '80',
+        tabBarInactiveTintColor: Colors.charcoalInk + '60',
         tabBarStyle: {
-          backgroundColor: Colors.white,
+          position: 'absolute',
+          backgroundColor: 'rgba(255, 255, 255, 0.92)',
           borderTopColor: Colors.heritageGreen + '10',
+          borderTopWidth: 1,
           paddingTop: 8,
-          height: 88,
+          paddingBottom: 28,
+          height: 84,
         },
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '500',
           marginTop: 4,
         },
-        headerStyle: {
-          backgroundColor: Colors.heritageGreen,
+        tabBarIconStyle: {
+          marginTop: 4,
         },
-        headerTintColor: Colors.ivoryLinen,
+        headerStyle: {
+          backgroundColor: Colors.white,
+          shadowColor: Colors.charcoalInk,
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.05,
+          shadowRadius: 8,
+          elevation: 2,
+        },
+        headerTintColor: Colors.charcoalInk,
         headerTitleStyle: {
           fontWeight: '600',
+          fontSize: 17,
         },
+        headerShadowVisible: false,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+          headerTitle: 'Heirloom',
+          headerTitleStyle: {
+            fontWeight: '700',
+            fontSize: 20,
+            color: Colors.heritageGreen,
+          },
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ? styles.activeIconContainer : undefined}>
+              <Ionicons
+                name={focused ? 'home' : 'home-outline'}
+                size={24}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -41,8 +68,14 @@ export default function TabLayout() {
         name="vault"
         options={{
           title: 'My Vault',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="folder" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ? styles.activeIconContainer : undefined}>
+              <Ionicons
+                name={focused ? 'folder' : 'folder-outline'}
+                size={24}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -50,8 +83,14 @@ export default function TabLayout() {
         name="family"
         options={{
           title: 'Family',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="people" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ? styles.activeIconContainer : undefined}>
+              <Ionicons
+                name={focused ? 'people' : 'people-outline'}
+                size={24}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
@@ -59,11 +98,26 @@ export default function TabLayout() {
         name="account"
         options={{
           title: 'Account',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <View style={focused ? styles.activeIconContainer : undefined}>
+              <Ionicons
+                name={focused ? 'person' : 'person-outline'}
+                size={24}
+                color={color}
+              />
+            </View>
           ),
         }}
       />
     </Tabs>
   );
 }
+
+const styles = StyleSheet.create({
+  activeIconContainer: {
+    backgroundColor: Colors.heritageGreen + '10',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+  },
+});
