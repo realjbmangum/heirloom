@@ -88,13 +88,34 @@ export default function Home() {
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const getCategoryLabel = (category: string) => {
+    const labels: Record<string, string> = {
+      early_life: 'Early Life',
+      school_years: 'School Years',
+      young_adulthood: 'Young Adult',
+      relationships: 'Relationships',
+      career: 'Career',
+      challenges: 'Challenges',
+      personal_growth: 'Growth',
+      legacy: 'Legacy',
+      gratitude: 'Gratitude',
+      final_thoughts: 'Final Words',
+    };
+    return labels[category] || category;
+  };
+
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      childhood: 'bg-blue-100 text-blue-700',
+      early_life: 'bg-blue-100 text-blue-700',
+      school_years: 'bg-cyan-100 text-cyan-700',
+      young_adulthood: 'bg-indigo-100 text-indigo-700',
+      relationships: 'bg-pink-100 text-pink-700',
       career: 'bg-green-100 text-green-700',
-      family: 'bg-purple-100 text-purple-700',
-      faith: 'bg-amber-100 text-amber-700',
+      challenges: 'bg-orange-100 text-orange-700',
+      personal_growth: 'bg-purple-100 text-purple-700',
       legacy: 'bg-heritage-green/10 text-heritage-green',
+      gratitude: 'bg-amber-100 text-amber-700',
+      final_thoughts: 'bg-rose-100 text-rose-700',
     };
     return colors[category] || 'bg-gray-100 text-gray-700';
   };
@@ -127,7 +148,7 @@ export default function Home() {
                 {prompt.text}
               </p>
               <span className={`inline-block px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(prompt.category)}`}>
-                {prompt.category}
+                {getCategoryLabel(prompt.category)}
               </span>
             </>
           ) : (

@@ -6,11 +6,16 @@ import { useAuth } from '../lib/auth';
 import { supabase } from '../lib/supabase';
 
 const CATEGORIES = [
-  { id: 'childhood', label: 'Childhood', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+  { id: 'early_life', label: 'Early Life', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+  { id: 'school_years', label: 'School Years', color: 'bg-cyan-100 text-cyan-700 border-cyan-200' },
+  { id: 'young_adulthood', label: 'Young Adult', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' },
+  { id: 'relationships', label: 'Relationships', color: 'bg-pink-100 text-pink-700 border-pink-200' },
   { id: 'career', label: 'Career', color: 'bg-green-100 text-green-700 border-green-200' },
-  { id: 'family', label: 'Family', color: 'bg-purple-100 text-purple-700 border-purple-200' },
-  { id: 'faith', label: 'Faith', color: 'bg-amber-100 text-amber-700 border-amber-200' },
+  { id: 'challenges', label: 'Challenges', color: 'bg-orange-100 text-orange-700 border-orange-200' },
+  { id: 'personal_growth', label: 'Growth', color: 'bg-purple-100 text-purple-700 border-purple-200' },
   { id: 'legacy', label: 'Legacy', color: 'bg-heritage-green/10 text-heritage-green border-heritage-green/20' },
+  { id: 'gratitude', label: 'Gratitude', color: 'bg-amber-100 text-amber-700 border-amber-200' },
+  { id: 'final_thoughts', label: 'Final Words', color: 'bg-rose-100 text-rose-700 border-rose-200' },
 ];
 
 export default function Record() {
