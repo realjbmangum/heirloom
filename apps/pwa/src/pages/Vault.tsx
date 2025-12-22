@@ -1,0 +1,170 @@
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { Mic, Play, Folder, ChevronLeft } from 'lucide-react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from '../lib/auth';
+
+interface Story {
+  id: string;
+  title: string;
+  media_type: string;
+  media_url: string;
+  duration_seconds: number;
+  category: string;
+  created_at: string;
+}
+
+const CATEGORIES = ['all', 'childhood', 'career', 'family', 'faith', 'legacy'];
+
+export default function Vault() {
+  const [stories, setStories] = useState<Story[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState('all');
+  const { user } = useAuth();
+
+  useEffect(() => {
+    loadStories();
+  }, [user]);
+
+  const loadStories = async () => {
+    if (!user) return;
+
+    setLoading(true);
+
+    const { data: vault } = await supabase
+      .from('vaults')
+      .select('id')
+      .eq('owner_user_id', user.id)
+      .eq('type', 'personal')
+      .single();
+
+    if (vault) {
+      const { data } = await supabase
+        .from('stories')
+        .select('*')
+        .eq('vault_id', vault.id)
+        .order('created_at', { ascending: false });
+
+      if (data) {
+        setStories(data);
+      }
+    }
+
+    setLoading(false);
+  };
+
+  const formatDuration = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const formatDate = (dateStr: string) => {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  const getCategoryColor = (category: string) => {
+    const colors: Record<string, string> = {
+      childhood: 'bg-blue-100 text-blue-700',
+      career: 'bg-green-100 text-green-700',
+      family: 'bg-purple-100 text-purple-700',
+      faith: 'bg-amber-100 text-amber-700',
+      legacy: 'bg-heritage-green/10 text-heritage-green',
+    };
+    return colors[category] || 'bg-gray-100 text-gray-700';
+  };
+
+  const filteredStories = filter === 'all'
+    ? stories
+    : stories.filter((s) => s.category === filter);
+
+  return (
+    <div className="min-h-screen pb-24">
+      {/* Header */}
+      <header className="bg-white border-b border-heritage-green/10 px-5 py-4 safe-top">
+        <div className="flex items-center gap-3">
+          <Link to="/" className="p-1">
+            <ChevronLeft className="w-6 h-6 text-charcoal-ink" />
+          </Link>
+          <div className="flex items-center gap-2">
+            <Folder className="w-5 h-5 text-heritage-green" />
+            <h1 className="font-semibold text-lg">My Vault</h1>
+          </div>
+        </div>
+      </header>
+
+      {/* Filter */}
+      <div className="px-5 py-4 overflow-x-auto no-scrollbar">
+        <div className="flex gap-2">
+          {CATEGORIES.map((cat) => (
+            <button
+              key={cat}
+              onClick={() => setFilter(cat)}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                filter === cat
+                  ? 'bg-heritage-green text-white'
+                  : 'bg-white text-charcoal-ink/60 border border-charcoal-ink/10'
+              }`}
+            >
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Stories Grid */}
+      <div className="px-5">
+        {loading ? (
+          <div className="text-center py-12 text-charcoal-ink/60">
+            Loading your stories...
+          </div>
+        ) : filteredStories.length === 0 ? (
+          <div className="text-center py-12">
+            <Folder className="w-12 h-12 text-heritage-green/20 mx-auto mb-4" />
+            <p className="text-charcoal-ink/60">
+              {filter === 'all' ? 'No stories yet' : `No ${filter} stories`}
+            </p>
+            <Link to="/record" className="btn-primary inline-block mt-4">
+              Record Your First Story
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4">
+            {filteredStories.map((story) => (
+              <Link
+                key={story.id}
+                to={`/story/${story.id}`}
+                className="card flex items-center gap-4"
+              >
+                <div className="w-14 h-14 bg-heritage-green/10 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Mic className="w-6 h-6 text-heritage-green/50" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-charcoal-ink truncate">
+                    {story.title || 'Untitled'}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className={`px-2 py-0.5 rounded text-xs font-medium ${getCategoryColor(story.category)}`}>
+                      {story.category}
+                    </span>
+                    <span className="text-xs text-charcoal-ink/40">
+                      {formatDuration(story.duration_seconds || 0)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-charcoal-ink/40 mt-1">
+                    {formatDate(story.created_at)}
+                  </p>
+                </div>
+                <Play className="w-5 h-5 text-heritage-green flex-shrink-0" />
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

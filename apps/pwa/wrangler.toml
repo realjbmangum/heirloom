@@ -1,0 +1,6 @@
+name = "heirloom-app"
+compatibility_date = "2024-12-01"
+pages_build_output_dir = "./dist"
+
+# SPA routing - redirect all requests to index.html
+# This is handled by _redirects file for Cloudflare Pages
