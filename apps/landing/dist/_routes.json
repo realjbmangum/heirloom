@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "include": [
+    "/*"
+  ],
+  "exclude": [
+    "/",
+    "/_astro/*",
+    "/favicon.svg",
+    "/heirloom1.mp4",
+    "/heirloom2.mp4",
+    "/about",
+    "/privacy",
+    "/terms"
+  ]
+}
