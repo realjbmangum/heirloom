@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mic, Folder, ChevronRight, RefreshCw } from 'lucide-react';
+import { Mic, Folder, ChevronRight, RefreshCw, Video, FileText, Image } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 
@@ -155,13 +155,36 @@ export default function Home() {
             <p className="text-charcoal-ink/60">Loading prompt...</p>
           )}
 
-          <button
-            onClick={() => navigate('/record', { state: { prompt } })}
-            className="btn-gold w-full mt-5 flex items-center justify-center gap-2"
-          >
-            <Mic className="w-5 h-5" />
-            Record Your Answer
-          </button>
+          <div className="grid grid-cols-4 gap-2 mt-5">
+            <button
+              onClick={() => navigate('/record', { state: { prompt } })}
+              className="flex flex-col items-center gap-1 p-3 rounded-xl bg-heritage-green/10 hover:bg-heritage-green/20 transition-colors"
+            >
+              <Mic className="w-6 h-6 text-heritage-green" />
+              <span className="text-xs text-heritage-green font-medium">Audio</span>
+            </button>
+            <button
+              onClick={() => navigate('/record/video', { state: { prompt } })}
+              className="flex flex-col items-center gap-1 p-3 rounded-xl bg-heritage-green/10 hover:bg-heritage-green/20 transition-colors"
+            >
+              <Video className="w-6 h-6 text-heritage-green" />
+              <span className="text-xs text-heritage-green font-medium">Video</span>
+            </button>
+            <button
+              onClick={() => navigate('/record/text', { state: { prompt } })}
+              className="flex flex-col items-center gap-1 p-3 rounded-xl bg-heritage-green/10 hover:bg-heritage-green/20 transition-colors"
+            >
+              <FileText className="w-6 h-6 text-heritage-green" />
+              <span className="text-xs text-heritage-green font-medium">Write</span>
+            </button>
+            <button
+              onClick={() => navigate('/record/photo', { state: { prompt } })}
+              className="flex flex-col items-center gap-1 p-3 rounded-xl bg-heritage-green/10 hover:bg-heritage-green/20 transition-colors"
+            >
+              <Image className="w-6 h-6 text-heritage-green" />
+              <span className="text-xs text-heritage-green font-medium">Photo</span>
+            </button>
+          </div>
         </div>
 
         {/* My Vault Section */}

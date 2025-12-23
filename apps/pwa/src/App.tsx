@@ -4,6 +4,9 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Home from './pages/Home';
 import Record from './pages/Record';
+import RecordText from './pages/RecordText';
+import RecordVideo from './pages/RecordVideo';
+import UploadPhoto from './pages/UploadPhoto';
 import Vault from './pages/Vault';
 import Story from './pages/Story';
 import TabBar from './components/TabBar';
@@ -88,6 +91,30 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <Record />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/record/text"
+          element={
+            <ProtectedRoute>
+              <RecordText />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/record/video"
+          element={
+            <ProtectedRoute>
+              <RecordVideo />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/record/photo"
+          element={
+            <ProtectedRoute>
+              <UploadPhoto />
             </ProtectedRoute>
           }
         />
