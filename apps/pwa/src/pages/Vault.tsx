@@ -14,7 +14,19 @@ interface Story {
   created_at: string;
 }
 
-const CATEGORIES = ['all', 'childhood', 'career', 'family', 'faith', 'legacy'];
+const CATEGORIES = [
+  { id: 'all', label: 'All' },
+  { id: 'early_life', label: 'Early Life' },
+  { id: 'school_years', label: 'School' },
+  { id: 'young_adulthood', label: 'Young Adult' },
+  { id: 'relationships', label: 'Relationships' },
+  { id: 'career', label: 'Career' },
+  { id: 'challenges', label: 'Challenges' },
+  { id: 'personal_growth', label: 'Growth' },
+  { id: 'legacy', label: 'Legacy' },
+  { id: 'gratitude', label: 'Gratitude' },
+  { id: 'final_thoughts', label: 'Final Words' },
+];
 
 export default function Vault() {
   const [stories, setStories] = useState<Story[]>([]);
@@ -67,13 +79,23 @@ export default function Vault() {
     });
   };
 
+  const getCategoryLabel = (category: string) => {
+    const cat = CATEGORIES.find(c => c.id === category);
+    return cat?.label || category;
+  };
+
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      childhood: 'bg-blue-100 text-blue-700',
+      early_life: 'bg-blue-100 text-blue-700',
+      school_years: 'bg-cyan-100 text-cyan-700',
+      young_adulthood: 'bg-indigo-100 text-indigo-700',
+      relationships: 'bg-pink-100 text-pink-700',
       career: 'bg-green-100 text-green-700',
-      family: 'bg-purple-100 text-purple-700',
-      faith: 'bg-amber-100 text-amber-700',
+      challenges: 'bg-orange-100 text-orange-700',
+      personal_growth: 'bg-purple-100 text-purple-700',
       legacy: 'bg-heritage-green/10 text-heritage-green',
+      gratitude: 'bg-amber-100 text-amber-700',
+      final_thoughts: 'bg-rose-100 text-rose-700',
     };
     return colors[category] || 'bg-gray-100 text-gray-700';
   };
@@ -102,15 +124,15 @@ export default function Vault() {
         <div className="flex gap-2">
           {CATEGORIES.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setFilter(cat)}
+              key={cat.id}
+              onClick={() => setFilter(cat.id)}
               className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                filter === cat
+                filter === cat.id
                   ? 'bg-heritage-green text-white'
                   : 'bg-white text-charcoal-ink/60 border border-charcoal-ink/10'
               }`}
             >
-              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+              {cat.label}
             </button>
           ))}
         </div>
@@ -149,7 +171,7 @@ export default function Vault() {
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${getCategoryColor(story.category)}`}>
-                      {story.category}
+                      {getCategoryLabel(story.category)}
                     </span>
                     <span className="text-xs text-charcoal-ink/40">
                       {formatDuration(story.duration_seconds || 0)}
