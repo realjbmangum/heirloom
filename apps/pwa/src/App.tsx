@@ -2,6 +2,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './lib/auth';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import Home from './pages/Home';
 import Record from './pages/Record';
 import RecordText from './pages/RecordText';
@@ -9,6 +11,9 @@ import RecordVideo from './pages/RecordVideo';
 import UploadPhoto from './pages/UploadPhoto';
 import Vault from './pages/Vault';
 import Story from './pages/Story';
+import Profile from './pages/Profile';
+import FamilyVault from './pages/FamilyVault';
+import InviteFamily from './pages/InviteFamily';
 import TabBar from './components/TabBar';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -76,6 +81,18 @@ function AppRoutes() {
             </PublicRoute>
           }
         />
+        <Route
+          path="/forgot-password"
+          element={
+            <PublicRoute>
+              <ForgotPassword />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/reset-password"
+          element={<ResetPassword />}
+        />
 
         {/* Protected routes */}
         <Route
@@ -131,6 +148,30 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <Story />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/family"
+          element={
+            <ProtectedRoute>
+              <FamilyVault />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/family/invite"
+          element={
+            <ProtectedRoute>
+              <InviteFamily />
             </ProtectedRoute>
           }
         />

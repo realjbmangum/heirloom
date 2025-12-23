@@ -83,7 +83,13 @@ export default function Login() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-charcoal-ink/60">
+        <div className="mt-4 text-center">
+          <Link to="/forgot-password" className="text-sm text-heritage-green font-medium">
+            Forgot password?
+          </Link>
+        </div>
+
+        <p className="mt-4 text-center text-sm text-charcoal-ink/60">
           Don't have an account?{' '}
           <Link to="/signup" className="text-heritage-green font-medium">
             Sign up

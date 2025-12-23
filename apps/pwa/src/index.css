@@ -121,3 +121,26 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* Modal animations */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Story card hover effect */
+.story-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.story-card:active {
+  transform: scale(0.98);
+}

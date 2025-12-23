@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Mic, Folder, ChevronRight, RefreshCw, Video, FileText, Image } from 'lucide-react';
+import { Mic, Folder, ChevronRight, RefreshCw, Video, FileText, Image as ImageIcon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 
@@ -14,6 +14,7 @@ interface Story {
   id: string;
   title: string;
   media_type: string;
+  media_url: string;
   duration_seconds: number;
   category: string;
   created_at: string;
@@ -181,7 +182,7 @@ export default function Home() {
               onClick={() => navigate('/record/photo', { state: { prompt } })}
               className="flex flex-col items-center gap-1 p-3 rounded-xl bg-heritage-green/10 hover:bg-heritage-green/20 transition-colors"
             >
-              <Image className="w-6 h-6 text-heritage-green" />
+              <ImageIcon className="w-6 h-6 text-heritage-green" />
               <span className="text-xs text-heritage-green font-medium">Photo</span>
             </button>
           </div>
@@ -209,23 +210,49 @@ export default function Home() {
             </div>
           ) : stories.length > 0 ? (
             <div className="flex gap-3 overflow-x-auto no-scrollbar -mx-5 px-5">
-              {stories.map((story) => (
-                <Link
-                  key={story.id}
-                  to={`/story/${story.id}`}
-                  className="card flex-shrink-0 w-40"
-                >
-                  <div className="w-full h-20 bg-heritage-green/10 rounded-lg mb-3 flex items-center justify-center">
-                    <Mic className="w-8 h-8 text-heritage-green/40" />
-                  </div>
-                  <p className="font-medium text-sm text-charcoal-ink truncate">
-                    {story.title || 'Untitled'}
-                  </p>
-                  <p className="text-xs text-charcoal-ink/50 mt-1">
-                    {formatDuration(story.duration_seconds || 0)}
-                  </p>
-                </Link>
-              ))}
+              {stories.map((story) => {
+                const getMediaIcon = () => {
+                  switch (story.media_type) {
+                    case 'video': return <Video className="w-8 h-8 text-purple-500/50" />;
+                    case 'photo': return <ImageIcon className="w-8 h-8 text-blue-500/50" />;
+                    case 'text': return <FileText className="w-8 h-8 text-amber-500/50" />;
+                    default: return <Mic className="w-8 h-8 text-heritage-green/40" />;
+                  }
+                };
+                const getMediaBg = () => {
+                  switch (story.media_type) {
+                    case 'video': return 'bg-purple-100';
+                    case 'photo': return 'bg-blue-100';
+                    case 'text': return 'bg-amber-100';
+                    default: return 'bg-heritage-green/10';
+                  }
+                };
+                return (
+                  <Link
+                    key={story.id}
+                    to={`/story/${story.id}`}
+                    className="card flex-shrink-0 w-40 story-card"
+                  >
+                    <div className={`w-full h-20 rounded-lg mb-3 flex items-center justify-center ${getMediaBg()}`}>
+                      {story.media_type === 'photo' && story.media_url ? (
+                        <img
+                          src={story.media_url}
+                          alt={story.title}
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                      ) : (
+                        getMediaIcon()
+                      )}
+                    </div>
+                    <p className="font-medium text-sm text-charcoal-ink truncate">
+                      {story.title || 'Untitled'}
+                    </p>
+                    <p className="text-xs text-charcoal-ink/50 mt-1">
+                      {story.duration_seconds > 0 ? formatDuration(story.duration_seconds) : story.media_type}
+                    </p>
+                  </Link>
+                );
+              })}
             </div>
           ) : (
             <div className="card text-center py-8">

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Mic, Play, Folder, ChevronLeft } from 'lucide-react';
+import { Mic, Play, Folder, ChevronLeft, Video, FileText, Image, Grid, List, Share2 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 
@@ -12,6 +12,7 @@ interface Story {
   duration_seconds: number;
   category: string;
   created_at: string;
+  is_shared_to_family: boolean;
 }
 
 const CATEGORIES = [
@@ -32,7 +33,35 @@ export default function Vault() {
   const [stories, setStories] = useState<Story[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const { user } = useAuth();
+
+  const getMediaIcon = (type: string) => {
+    switch (type) {
+      case 'video': return <Video className="w-6 h-6" />;
+      case 'photo': return <Image className="w-6 h-6" />;
+      case 'text': return <FileText className="w-6 h-6" />;
+      default: return <Mic className="w-6 h-6" />;
+    }
+  };
+
+  const getMediaBgColor = (type: string) => {
+    switch (type) {
+      case 'video': return 'bg-purple-100';
+      case 'photo': return 'bg-blue-100';
+      case 'text': return 'bg-amber-100';
+      default: return 'bg-heritage-green/10';
+    }
+  };
+
+  const getMediaIconColor = (type: string) => {
+    switch (type) {
+      case 'video': return 'text-purple-600';
+      case 'photo': return 'text-blue-600';
+      case 'text': return 'text-amber-600';
+      default: return 'text-heritage-green';
+    }
+  };
 
   useEffect(() => {
     loadStories();
@@ -119,26 +148,51 @@ export default function Vault() {
         </div>
       </header>
 
-      {/* Filter */}
-      <div className="px-5 py-4 overflow-x-auto no-scrollbar">
-        <div className="flex gap-2">
-          {CATEGORIES.map((cat) => (
+      {/* Filter & View Toggle */}
+      <div className="px-5 py-4">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-medium text-charcoal-ink/60">
+            {filteredStories.length} {filteredStories.length === 1 ? 'story' : 'stories'}
+          </span>
+          <div className="flex items-center gap-1 bg-white rounded-lg p-1 shadow-sm">
             <button
-              key={cat.id}
-              onClick={() => setFilter(cat.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                filter === cat.id
-                  ? 'bg-heritage-green text-white'
-                  : 'bg-white text-charcoal-ink/60 border border-charcoal-ink/10'
+              onClick={() => setViewMode('grid')}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === 'grid' ? 'bg-heritage-green/10 text-heritage-green' : 'text-charcoal-ink/40'
               }`}
             >
-              {cat.label}
+              <Grid className="w-4 h-4" />
             </button>
-          ))}
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-2 rounded-md transition-colors ${
+                viewMode === 'list' ? 'bg-heritage-green/10 text-heritage-green' : 'text-charcoal-ink/40'
+              }`}
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <div className="overflow-x-auto no-scrollbar -mx-5 px-5">
+          <div className="flex gap-2">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setFilter(cat.id)}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+                  filter === cat.id
+                    ? 'bg-heritage-green text-white'
+                    : 'bg-white text-charcoal-ink/60 border border-charcoal-ink/10'
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Stories Grid */}
+      {/* Stories */}
       <div className="px-5">
         {loading ? (
           <div className="text-center py-12 text-charcoal-ink/60">
@@ -154,16 +208,66 @@ export default function Vault() {
               Record Your First Story
             </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-4">
+        ) : viewMode === 'grid' ? (
+          /* Grid View */
+          <div className="grid grid-cols-2 gap-3">
             {filteredStories.map((story) => (
               <Link
                 key={story.id}
                 to={`/story/${story.id}`}
-                className="card flex items-center gap-4"
+                className="card story-card p-3"
               >
-                <div className="w-14 h-14 bg-heritage-green/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Mic className="w-6 h-6 text-heritage-green/50" />
+                <div className={`w-full aspect-square rounded-xl mb-3 flex items-center justify-center ${getMediaBgColor(story.media_type)}`}>
+                  {story.media_type === 'photo' && story.media_url ? (
+                    <img
+                      src={story.media_url}
+                      alt={story.title}
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                  ) : (
+                    <div className={getMediaIconColor(story.media_type)}>
+                      {getMediaIcon(story.media_type)}
+                    </div>
+                  )}
+                </div>
+                <p className="font-medium text-sm text-charcoal-ink truncate">
+                  {story.title || 'Untitled'}
+                </p>
+                <div className="flex items-center gap-1 mt-1">
+                  <span className={`px-2 py-0.5 rounded text-xs font-medium ${getCategoryColor(story.category)}`}>
+                    {getCategoryLabel(story.category)}
+                  </span>
+                  {story.is_shared_to_family && (
+                    <Share2 className="w-3 h-3 text-heritage-green ml-auto" />
+                  )}
+                </div>
+                <p className="text-xs text-charcoal-ink/40 mt-1">
+                  {formatDate(story.created_at)}
+                </p>
+              </Link>
+            ))}
+          </div>
+        ) : (
+          /* List View */
+          <div className="grid grid-cols-1 gap-3">
+            {filteredStories.map((story) => (
+              <Link
+                key={story.id}
+                to={`/story/${story.id}`}
+                className="card story-card flex items-center gap-4"
+              >
+                <div className={`w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 ${getMediaBgColor(story.media_type)}`}>
+                  {story.media_type === 'photo' && story.media_url ? (
+                    <img
+                      src={story.media_url}
+                      alt={story.title}
+                      className="w-full h-full object-cover rounded-xl"
+                    />
+                  ) : (
+                    <div className={getMediaIconColor(story.media_type)}>
+                      {getMediaIcon(story.media_type)}
+                    </div>
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-charcoal-ink truncate">
@@ -173,9 +277,14 @@ export default function Vault() {
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${getCategoryColor(story.category)}`}>
                       {getCategoryLabel(story.category)}
                     </span>
-                    <span className="text-xs text-charcoal-ink/40">
-                      {formatDuration(story.duration_seconds || 0)}
-                    </span>
+                    {story.duration_seconds > 0 && (
+                      <span className="text-xs text-charcoal-ink/40">
+                        {formatDuration(story.duration_seconds)}
+                      </span>
+                    )}
+                    {story.is_shared_to_family && (
+                      <Share2 className="w-3 h-3 text-heritage-green" />
+                    )}
                   </div>
                   <p className="text-xs text-charcoal-ink/40 mt-1">
                     {formatDate(story.created_at)}
