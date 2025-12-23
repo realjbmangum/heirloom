@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Users, Play, ChevronLeft, UserPlus, Mic, Video, FileText, Image } from 'lucide-react';
+import { Users, Play, ChevronLeft, UserPlus, Mic, Video, FileText, Image, GitBranch } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../lib/auth';
 
@@ -264,12 +264,22 @@ export default function FamilyVault() {
               <h1 className="font-semibold text-lg">Family Vault</h1>
             </div>
           </div>
-          <button
-            onClick={() => navigate('/family/invite')}
-            className="p-2 text-heritage-green"
-          >
-            <UserPlus className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => navigate('/family/tree')}
+              className="p-2 text-heritage-green hover:bg-heritage-green/5 rounded-lg transition-colors"
+              title="Family Tree"
+            >
+              <GitBranch className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => navigate('/family/invite')}
+              className="p-2 text-heritage-green hover:bg-heritage-green/5 rounded-lg transition-colors"
+              title="Invite Family"
+            >
+              <UserPlus className="w-5 h-5" />
+            </button>
+          </div>
         </div>
       </header>
 

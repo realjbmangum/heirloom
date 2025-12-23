@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, Folder, Mic, Users, User } from 'lucide-react';
+import { Home, Calendar, Mic, Users, User } from 'lucide-react';
 
 export default function TabBar() {
   const location = useLocation();
@@ -8,13 +8,14 @@ export default function TabBar() {
   const hiddenRoutes = ['/record', '/login', '/signup', '/forgot-password', '/reset-password'];
   if (hiddenRoutes.some((r) => location.pathname.startsWith(r)) ||
       location.pathname.startsWith('/story/') ||
-      location.pathname.startsWith('/family/')) {
+      location.pathname.startsWith('/family/') ||
+      location.pathname.startsWith('/tree')) {
     return null;
   }
 
   const tabs = [
     { path: '/', icon: Home, label: 'Home' },
-    { path: '/vault', icon: Folder, label: 'Vault' },
+    { path: '/calendar', icon: Calendar, label: 'Calendar' },
     { path: '/record', icon: Mic, label: 'Record', special: true },
     { path: '/family', icon: Users, label: 'Family' },
     { path: '/profile', icon: User, label: 'Profile' },

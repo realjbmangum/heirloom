@@ -4,7 +4,7 @@ import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-import Home from './pages/Home';
+import Dashboard from './pages/Dashboard';
 import Record from './pages/Record';
 import RecordText from './pages/RecordText';
 import RecordVideo from './pages/RecordVideo';
@@ -12,7 +12,9 @@ import UploadPhoto from './pages/UploadPhoto';
 import Vault from './pages/Vault';
 import Story from './pages/Story';
 import Profile from './pages/Profile';
+import Calendar from './pages/Calendar';
 import FamilyVault from './pages/FamilyVault';
+import FamilyTree from './pages/FamilyTree';
 import InviteFamily from './pages/InviteFamily';
 import TabBar from './components/TabBar';
 
@@ -99,7 +101,7 @@ function AppRoutes() {
           path="/"
           element={
             <ProtectedRoute>
-              <Home />
+              <Dashboard />
             </ProtectedRoute>
           }
         />
@@ -160,6 +162,14 @@ function AppRoutes() {
           }
         />
         <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute>
+              <Calendar />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/family"
           element={
             <ProtectedRoute>
@@ -172,6 +182,22 @@ function AppRoutes() {
           element={
             <ProtectedRoute>
               <InviteFamily />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/family/tree"
+          element={
+            <ProtectedRoute>
+              <FamilyTree />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tree"
+          element={
+            <ProtectedRoute>
+              <FamilyTree />
             </ProtectedRoute>
           }
         />
